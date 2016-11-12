@@ -1,1 +1,1 @@
-Just add this file to your connection php file, set the credentials on mysql_connect https://github.com/gabrielpconceicao/pdo-simulation-class/blob/master/pdo.simulation.php#L41 ( default: local: localhost, user:user, pass:pass ) and you have a simple PDO working !!!
+Just add this file to your connection php file, set the credentials on mysql_connect <a href="https://github.com/gabrielpconceicao/pdo-simulation-class/blob/master/pdo.simulation.php#L41">pdo.simulation.php#L41</a> ( default: local: localhost, user:user, pass:pass ) and you have a simple PDO working !!!
