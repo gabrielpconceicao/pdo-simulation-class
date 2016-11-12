@@ -1,44 +1,70 @@
 <?php 
 
-	/* Gabriel Conceição - PDO Simulation | Workaround for PDO webserver no support - gabriel_7340@hotmail.com */
+	/* Gabriel Conceição - PDO Simulation | Workaround for webserver no support */
 
 	class PDO { 
 		public $_conn = '';
 		public $_query = '';
-		public $_data = '';
+		public $_request = '';
+		public $_data = array();
+		public $_arguments = '';
+		public $_charset = '';
 
-		/* PDO Constants */
-		const FETCH_ASSOC = '';
-		const PARAM_STR = '';
-		const PARAM_INT = '';
+		const FETCH_ASSOC = 'FETCH_ASSOC';
+		const PARAM_STR = 'PARAM_STR';
+		const PARAM_INT = 'PARAM_INT';
 
-		public function bindValue( $field, $data ) { 
-			$this->_query = str_replace( $field, "'".$data."'", $this->_query );
+		function __construct( $args ) {
+			$this->_arguments = explode(";", $args );
+
+			foreach( $this->_arguments as $key => $val ){
+				if( strpos( $val, 'charset=') !== false )
+					$this->_charset = str_replace( 'charset=', '', $val);
+			}
 		}
-		
-		public function bindParam( $field, $data ) { 
-			$this->_query = str_replace( $field, "'".$data."'", $this->_query );
+
+		public function bindValue( $field, $data, $type ) {
+			if( $type == 'PARAM_INT' && gettype( $data ) != 'string' )
+				$this->_query = str_replace( $field, $data, $this->_query );
+			else
+				$this->_query = str_replace( $field, "'".$data."'", $this->_query );
+		}
+ 
+ 		public function bindParam( $field, $data, $type ) { 
+ 			if( $type == 'PARAM_INT' && gettype( $data ) != 'string' )
+ 				$this->_query = str_replace( $field, $data, $this->_query );
+ 			else
+ 				$this->_query = str_replace( $field, "'".$data."'", $this->_query );
 		} 
-	
+
 		public function prepare( $q ) { 
 			$this->_conn = mysql_connect( 'localhost', 'user', 'pass' );
-	
-			mysql_set_charset('utf8', $this->_conn);
+			mysql_set_charset( $this->_charset, $this->_conn);
+						
+			mysql_query("SET NAMES '".$this->_charset."'");
+			mysql_query("SET CHARACTER SET ".$this->_charset );
+			mysql_query("SET COLLATION_CONNECTION = '".$this->_charset."_unicode_ci'");
+
 			mysql_select_db( 'database' );  
 
 			$this->_query = $q;
 			return $this;
-		} 
+		}
 
 		public function execute() { 
+			$this->_data = array();
+			$this->_request = mysql_query( $this->_query );
 
-			$this->_data = mysql_query( $this->_query );
+			while ( $row = mysql_fetch_assoc( $this->_request ) ) {  
+				array_push( $this->_data, $row );
+			}
+
 			return $this->_data;
 		} 
 
 		public function fetch() { 
-			while ( $row = mysql_fetch_array( $this->_data ) ) {  
-				return $row;
+			foreach( $this->_data as $entry ) {  
+				return $entry;
 			} 
 		} 
 
@@ -47,7 +73,7 @@
 		}
 
 		public function rowCount(){
-			return mysql_num_rows( $this->_data );
+			return mysql_num_rows( $this->_request );
 		}
-	}  
+	}
 ?>
