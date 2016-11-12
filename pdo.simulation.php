@@ -1,6 +1,6 @@
 <?php 
 
-	/* Gabriel Conceição - PDO Simulation | Workaround for PDO webserver no support - gabriel_7340@hotmail.com*/
+	/* Gabriel Conceição - PDO Simulation | Workaround for PDO webserver no support - gabriel_7340@hotmail.com */
 
 	class PDO { 
 		public $_conn = '';
@@ -22,14 +22,12 @@
 	
 		public function prepare( $q ) { 
 			$this->_conn = mysql_connect( 'localhost', 'user', 'pass' );
-						mysql_set_charset('utf8', $this->_conn);
-
+	
+			mysql_set_charset('utf8', $this->_conn);
 			mysql_select_db( 'database' );  
- 
 
 			$this->_query = $q;
-
-						return $this;
+			return $this;
 		} 
 
 		public function execute() { 
