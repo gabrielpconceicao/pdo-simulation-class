@@ -1,6 +1,7 @@
 <?php 
 
-	/* Gabriel Conceição - PDO Simulation | Workaround for webserver no support */
+	/* Gabriel Conceição - PDO Simulation | Workaround for webserver no support
+	   https://github.com/gabrielpconceicao/pdo-simulation-class */
 
 	class PDO { 
 		public $_conn = '';
@@ -38,7 +39,7 @@
 		} 
 
 		public function prepare( $q ) { 
-			$this->_conn = mysql_connect( 'localhost', 'user', 'pass' );
+			$this->_conn = mysql_connect( 'localhost', 'root', 'pass' );
 			mysql_set_charset( $this->_charset, $this->_conn);
 						
 			mysql_query("SET NAMES '".$this->_charset."'");
@@ -58,14 +59,20 @@
 			while ( $row = mysql_fetch_assoc( $this->_request ) ) {  
 				array_push( $this->_data, $row );
 			}
+			
+			$this->_request = mysql_query( $this->_query );
 
 			return $this->_data;
 		} 
 
 		public function fetch() { 
-			foreach( $this->_data as $entry ) {  
-				return $entry;
-			} 
+			return mysql_fetch_assoc( $this->_request );
+			
+		}
+		
+	    public function fetchAll() { 
+			return $this->_data;
+			
 		} 
 
 		public function setAttribute(){
