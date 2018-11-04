@@ -25,17 +25,13 @@
 		}
 
 		public function bindValue( $field, $data, $type ) {
-			if( $type == 'PARAM_INT' && gettype( $data ) != 'string' )
-				$this->_query = str_replace( $field, $data, $this->_query );
-			else
-				$this->_query = str_replace( $field, "'".$data."'", $this->_query );
+			$data = ($type == 'PARAM_INT' && gettype( $data ) != 'string') ? $data : sprintf("'%s'", $data);
+			$this->_query = str_replace( $field, $data, $this->_query );
 		}
  
  		public function bindParam( $field, $data, $type ) { 
- 			if( $type == 'PARAM_INT' && gettype( $data ) != 'string' )
- 				$this->_query = str_replace( $field, $data, $this->_query );
- 			else
- 				$this->_query = str_replace( $field, "'".$data."'", $this->_query );
+ 			$data = ($type == 'PARAM_INT' && gettype( $data ) != 'string') ? $data : sprintf("'%s'", $data);
+ 			$this->_query = str_replace( $field, $data, $this->_query );
 		} 
 
 		public function prepare( $q ) { 
